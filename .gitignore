@@ -1,0 +1,4 @@
+/target
+/debug
+[._]*.s[a-v][a-z]
+*.json

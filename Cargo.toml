@@ -1,0 +1,12 @@
+[package]
+name = "matrix-message-decrypter"
+version = "0.1.0"
+edition = "2021"
+license = "GPLv3"
+
+[dependencies]
+base64 = "0.21.4"
+clap = { version = "4.4.6", features = ["derive"]}
+serde = "1.0.188"
+serde_json = "1.0.107"
+vodozemac = "0.5.0"
