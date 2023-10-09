@@ -110,7 +110,7 @@ Example:
   },
 ```
 
-You can use jq to format the message:
+You can use [jq](https://jqlang.github.io/jq/) to remove clutter:
 ```bash
 jq '[map(select(.content_decrypted))[] | { meta: .json|fromjson|pick(.room_id,.sender,.origin_server_ts), body: .content_decrypted.content.body }] | sort_by(.meta.origin_server_ts)' messages_decrypted.json
 
