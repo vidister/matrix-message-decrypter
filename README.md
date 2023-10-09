@@ -4,14 +4,16 @@ Decrypt Matrix Megolm messages using E2E key backups
 
 ## What?
 
-This small Rust utility allows you to use your E2E Room backup keys to decrypt Megolm encrypted messages sent via the Matrix protocol.
+It's a small Rust utility that allows you to use your E2E Room backup keys to decrypt Megolm encrypted messages sent via the Matrix protocol.
 
 There are some special use cases for this tool, let's say you want to recover messages from your homeserver that went potatoes, or you need to access old messages from a blocked user.
 Normally you don't need this, except for when things went wrong.
 
 If you work in law enforcement: stop reading and find a better job.
 
-The [vodozemac](https://github.com/matrix-org/vodozemac) crate does all the heavy lifting here. It's my first Rust project and I wrote it in two evenings, there is no proper error handling, etc., be warned. I don't think it will eat your homework, but if it does it's your own fault.
+The [vodozemac](https://github.com/matrix-org/vodozemac) crate does all the heavy lifting here. Thanks!
+
+This tool is my first Rust project and I wrote it in two evenings, there is no proper error handling, etc., be warned. I don't think it will eat your homework, but if it does it's your own fault.
 
 ## Usage
 ```
@@ -57,18 +59,14 @@ Backup passphrase [mode=decrypt]:
 
 ### Export Encrypted Messages
 
-First we need to gather a dump of all messages.
+First we need to gather a dump of/ all messages.
 In this example we use the JSON export feature of Postgres to export events from the Synapse database.
 
 Export all events:
-```bash
-psql -d matrix-synapse -qAtX -c "select json_agg(t) FROM (SELECT * from event_json) t;" -o messages.json
-```
+`psql -d matrix-synapse -qAtX -c "select json_agg(t) FROM (SELECT * from event_json) t;" -o messages.json`
 
 Export all events from specific room:
-```bash
-psql -d matrix-synapse -qAtX -c "select json_agg(t) FROM (SELECT * from event_json WHERE room_id = '!dfKadcascAbtdeeJdb:example.com') t;" -o messages.json
-```
+`psql -d matrix-synapse -qAtX -c "select json_agg(t) FROM (SELECT * from event_json WHERE room_id = '!dfKadcascAbtdeeJdb:example.com') t;" -o messages.json`
 
 ### Using this tool
 
@@ -81,7 +79,7 @@ cargo build --release
 
 Usage example:
 ```bash
-# ./target/release/matrix-message-decrypter --keyfile keys.json --messagefile output_test.json --output message dump_decrypted.json
+# ./target/release/matrix-message-decrypter --keyfile keys.json --messagefile messages.json --output messages_decrypted.json
 
 Loading Sessionkeys
 Message $pcUildviZA99Sg-RwSaEhVoZzWAjHmdg_u2Dgo7R1yG: Decrypting using key QE9ZaUEayIlJ+V7FPAqvGUlyuSE4MYw+HOvXEZCBOhk
@@ -114,7 +112,7 @@ Example:
 
 You can use jq to format the message:
 ```bash
-jq '[map(select(.content_decrypted))[] | { meta: .json|fromjson|pick(.room_id,.sender,.origin_server_ts), body: .content_decrypted.content.body }] | sort_by(.meta.origin_server_ts)' dump_decrypted.json
+jq '[map(select(.content_decrypted))[] | { meta: .json|fromjson|pick(.room_id,.sender,.origin_server_ts), body: .content_decrypted.content.body }] | sort_by(.meta.origin_server_ts)' messages_decrypted.json
 
 [
   {
