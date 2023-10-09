@@ -11,9 +11,11 @@ Normally you don't need this, except for when things went wrong.
 
 If you work in law enforcement: stop reading and find a better job.
 
-The [vodozemac](https://github.com/matrix-org/vodozemac) crate does all the heavy lifting here. Thanks!
-
 This tool is my first Rust project and I wrote it in two evenings, there is no proper error handling, etc., be warned. I don't think it will eat your homework, but if it does it's your own fault.
+
+## Credits
+
+The [vodozemac](https://github.com/matrix-org/vodozemac) crate does all the heavy lifting here. Thanks!
 
 ## Usage
 ```
