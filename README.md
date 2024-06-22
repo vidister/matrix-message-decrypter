@@ -65,10 +65,10 @@ First we need to gather a dump of/ all messages.
 In this example we use the JSON export feature of Postgres to export events from the Synapse database.
 
 Export all events:
-`psql -d matrix-synapse -qAtX -c "select json_agg(t) FROM (SELECT * from event_json) t;" -o messages.json`
+`psql -d matrix-synapse -qAtX -c "select row_to_json(event_json) from event_json;" -o messages.json`
 
 Export all events from specific room:
-`psql -d matrix-synapse -qAtX -c "select json_agg(t) FROM (SELECT * from event_json WHERE room_id = '!dfKadcascAbtdeeJdb:example.com') t;" -o messages.json`
+`psql -d matrix-synapse -qAtX -c "select row_to_json(event_json) FROM event_json WHERE room_id = '!dfKadcascAbtdeeJdb:example.com';" -o messages.json`
 
 ### Using this tool
 
