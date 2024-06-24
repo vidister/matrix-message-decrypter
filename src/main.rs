@@ -1,6 +1,7 @@
 use base64::Engine;
 use clap::Parser;
-use serde_json::Value;
+use serde::de;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
@@ -67,10 +68,19 @@ fn get_decrypted_messages(
                 let message = base64::engine::general_purpose::STANDARD_NO_PAD
                     .decode(&content["ciphertext"].as_str().unwrap())
                     .unwrap();
-                let decrypted_message =
-                    serde_json::from_str(&get_decrypted_ciphertext(sessionkey, message))
+
+                let decrypted_ciphertext = get_decrypted_ciphertext(sessionkey, message);
+                if decrypted_ciphertext.is_err() {
+                    let error_message = format!("** Unable to decrypt: DecryptionError: {:?} **", decrypted_ciphertext.unwrap_err());
+                    eprintln!("{}", error_message);
+
+                    m.insert("content_decrypted".to_string(), json!({ "msgtype": "m.bad.encrypted", "body": error_message }));
+                } else {
+                    let decrypted_message = serde_json::from_str(&decrypted_ciphertext.unwrap())
                         .expect("Parsing decrypted message failed");
-                m.insert("content_decrypted".to_string(), decrypted_message);
+
+                    m.insert("content_decrypted".to_string(), decrypted_message);
+                }
             } else {
                 eprintln!("Message {message_id}: No matching key found, skipping");
             }
@@ -100,16 +110,14 @@ fn get_sessionkeys_from_json(keys_raw: String) -> HashMap<String, String> {
     })
 }
 
-fn get_decrypted_ciphertext(sessionkey: Vec<u8>, ciphertext: Vec<u8>) -> String {
+fn get_decrypted_ciphertext(sessionkey: Vec<u8>, ciphertext: Vec<u8>) -> Result<String, vodozemac::megolm::DecryptionError> {
     let session_key = vodozemac::megolm::ExportedSessionKey::from_bytes(&sessionkey).unwrap();
     let mut session = vodozemac::megolm::InboundGroupSession::import(
         &session_key,
         vodozemac::megolm::SessionConfig::version_1(),
     );
 
-    let decrypted = session
+    session
         .decrypt(&vodozemac::megolm::MegolmMessage::from_bytes(&ciphertext).unwrap())
-        .expect("Decrypting message failed unexpectedly");
-
-    String::from_utf8(decrypted.plaintext).unwrap()
+        .map(|decrypted| String::from_utf8(decrypted.plaintext).unwrap())
 }
