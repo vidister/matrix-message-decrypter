@@ -35,7 +35,7 @@ The tool loads the whole message file into memory and parses it there. Split you
 ## User Guide
 
 We need to perform multiple steps to decrypt our messages:
-1. Gather the messages we want to decrypt from the Homeserver database
+1. Gather the messages we want to decrypt
 2. Back up session keys
 3. Decrypt session keys
 4. Use this tool to decrypt messages
@@ -69,6 +69,10 @@ Export all events:
 
 Export all events from specific room:
 `psql -d matrix-synapse -qAtX -c "select json_agg(t) FROM (SELECT * from event_json WHERE room_id = '!dfKadcascAbtdeeJdb:example.com') t;" -o messages.json`
+
+Alternatively, you can use the [room messages admin api](https://element-hq.github.io/synapse/latest/admin_api/rooms.html#room-messages-api)
+to get an export of encrypted room messages. In that case this tool will expect an array with the entries of `chunk` (for fetching more than
+up to 1000 events concat the contents of all the `chunks`).
 
 ### Using this tool
 
