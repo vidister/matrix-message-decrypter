@@ -29,9 +29,6 @@ Options:
   -V, --version                    Print version
 ```
 
-Hint when working on huge piles of messages:
-The tool loads the whole message file into memory and parses it there. Split your files, implement stream processing or something, idk, you'll figure it out.
-
 ## User Guide
 
 We need to perform multiple steps to decrypt our messages:
@@ -114,7 +111,7 @@ Example:
 
 You can use [jq](https://jqlang.github.io/jq/) to remove clutter:
 ```bash
-jq '[map(select(.content_decrypted))[] | { meta: .json|fromjson|pick(.room_id,.sender,.origin_server_ts), body: .content_decrypted.content.body }] | sort_by(.meta.origin_server_ts)' messages_decrypted.json
+jq -s '[map(select(.content_decrypted))[] | { meta: .json|fromjson|pick(.room_id,.sender,.origin_server_ts), body: .content_decrypted.content.body }] | sort_by(.meta.origin_server_ts)' messages_decrypted.json
 
 [
   {
