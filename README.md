@@ -106,7 +106,9 @@ Example:
     "event_id": "$pcUildviZA99Sg-RwSaEhVoZzWAjHmdg_u2Dgo7R1yG",
     "json": [...],
     "room_id": "!eCCmkElZUXYYYMJTl:example.com"
-  },
+  }
+  {
+    [...]
 ```
 
 You can use [jq](https://jqlang.github.io/jq/) to remove clutter:
